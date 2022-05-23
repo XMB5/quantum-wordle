@@ -20,7 +20,7 @@
 			$settings.colorblind
 				? root.classList.add("colorblind")
 				: root.classList.remove("colorblind");
-			localStorage.setItem("settings", JSON.stringify($settings));
+			localStorage.setItem("quantum-wordle-settings", JSON.stringify($settings));
 		}
 	}
 </script>
