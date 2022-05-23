@@ -12,20 +12,6 @@ export const words = {
 	},
 };
 
-export function checkHardMode(board: GameBoard, row: number): HardModeData {
-	for (let i = 0; i < COLS; ++i) {
-		if (board.state[row - 1][i] === "🟩" && board.words[row - 1][i] !== board.words[row][i]) {
-			return { pos: i, char: board.words[row - 1][i], type: "🟩" };
-		}
-	}
-	for (let i = 0; i < COLS; ++i) {
-		if (board.state[row - 1][i] === "🟨" && !board.words[row].includes(board.words[row - 1][i])) {
-			return { pos: i, char: board.words[row - 1][i], type: "🟨" };
-		}
-	}
-	return { pos: -1, char: "", type: "⬛" };
-}
-
 class Tile {
 	public value: string;
 	public notSet: Set<string>;
@@ -154,6 +140,30 @@ export function getState(word: string, guess: string): LetterState[] {
 	return result;
 }
 
+export function mergeStates(state1: LetterState[], state2: LetterState[]) {
+	const result = Array<LetterState>();
+	for (let i = 0; i < state1.length; i++) {
+		if (state1[i] === '🟩' || state2[i] === '🟩') {
+			result[i] = '🟩';
+		} else if (state1[i] === '🟨' || state2[i] === '🟨') {
+			result[i] = '🟨';
+		} else {
+			result[i] = '⬛';
+		}
+	}
+	return result;
+}
+
+export function updateLetterState(prevState: LetterState, newState: LetterState): LetterState {
+	if (prevState === '🔳') {
+		return newState;
+	} else if (prevState === '⬛') {
+		return '⬛';
+	} else {
+		return newState;
+	}
+}
+
 export function contractNum(n: number) {
 	switch (n % 10) {
 		case 1: return `${n}st`;
@@ -250,7 +260,8 @@ export function createNewGame(mode: GameMode): GameState {
 		wordNumber: getWordNumber(mode),
 		validHard: true,
 		board: {
-			words: Array(ROWS).fill(""),
+			words1: Array(ROWS).fill(""),
+			words2: Array(ROWS).fill(""),
 			state: Array.from({ length: ROWS }, () => (Array(COLS).fill("🔳")))
 		},
 	};

@@ -27,7 +27,8 @@ type GameState = {
 };
 
 type GameBoard = {
-	words: string[],
+	words1: string[],
+	words2: string[],
 	state: LetterState[][],
 };
 

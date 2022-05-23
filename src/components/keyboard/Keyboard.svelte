@@ -4,21 +4,30 @@
 	import { COLS, keys } from "../../utils";
 	import Key from "./Key.svelte";
 
-	export let value = "";
+	export let value1 = "";
+	export let value2 = "";
 	export let disabled = false;
 	let preventChange = true;
 
 	const dispatch = createEventDispatcher();
 
 	function appendValue(char: string) {
-		if (!disabled && value.length < COLS) {
+		if (!disabled && value2.length < COLS) {
 			dispatch("keystroke", char);
-			value += char;
+			if (value1.length < COLS) {
+				value1 += char;
+			} else {
+				value2 += char;
+			}
 		}
 	}
 	function backspaceValue() {
 		if (!disabled) {
-			value = value.slice(0, value.length - 1);
+			if (value2.length === 0) {
+				value1 = value1.substring(0, value1.length - 1);
+			} else {
+				value2 = value2.substring(0, value2.length - 1);
+			}
 		}
 	}
 	function handleKeystroke(e: KeyboardEvent) {

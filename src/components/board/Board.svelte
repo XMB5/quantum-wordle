@@ -6,7 +6,8 @@
 	import { createEventDispatcher } from "svelte";
 	import { scale } from "svelte/transition";
 
-	export let value: string[];
+	export let value1: string[];
+	export let value2: string[];
 	export let board: GameBoard;
 	export let guesses: number;
 	export let icon: string;
@@ -30,12 +31,13 @@
 	let y = 0;
 	let word = "";
 
-	function context(cx: number, cy: number, num: number, val: string) {
+	function context(cx: number, cy: number, num: number, val1: string, val2: string) {
+		//TODO: low priority: make 2-word context display
 		if (guesses >= num) {
 			x = cx;
 			y = cy;
 			showCtx = true;
-			word = guesses > num ? val : "";
+			word = guesses > num ? val1 : "";
 
 			const match = getRowData(num, board);
 			pAns = words.words.filter((w) => match(w)).length;
@@ -49,14 +51,15 @@
 {/if}
 
 <div class="board">
-	{#each value as _, i}
+	{#each value1 as _, i}
 		<Row
 			num={i}
 			{guesses}
 			bind:this={rows[i]}
-			bind:value={value[i]}
+			bind:value1={value1[i]}
+			bind:value2={value2[i]}
 			state={board.state[i]}
-			on:ctx={(e) => context(e.detail.x, e.detail.y, i, value[i])}
+			on:ctx={(e) => context(e.detail.x, e.detail.y, i, value1[i], value2[i])}
 		/>
 	{/each}
 	{#if icon}
@@ -78,7 +81,7 @@
 		display: grid;
 		grid-template-rows: repeat(var(--rows), 1fr);
 		gap: 5.5px;
-		max-height: 420px;
+		max-height: 900px;
 		flex-grow: 1;
 		aspect-ratio: var(--cols) / var(--rows);
 		padding: 10px;

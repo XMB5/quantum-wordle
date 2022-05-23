@@ -66,17 +66,18 @@
 			}
 		}
 		// Set the letter states when data for a new game mode is loaded so the keyboard is correct
+		//TODO: keyboard colors for 2x
 		const letters = createLetterStates();
-		for (let row = 0; row < ROWS; ++row) {
-			for (let col = 0; col < state.board.words[row].length; ++col) {
-				if (
-					letters[state.board.words[row][col]] === "🔳" ||
-					state.board.state[row][col] === "🟩"
-				) {
-					letters[state.board.words[row][col]] = state.board.state[row][col];
-				}
-			}
-		}
+		// for (let row = 0; row < ROWS; ++row) {
+		// 	for (let col = 0; col < state.board.words[row].length; ++col) {
+		// 		if (
+		// 			letters[state.board.words[row][col]] === "🔳" ||
+		// 			state.board.state[row][col] === "🟩"
+		// 		) {
+		// 			letters[state.board.words[row][col]] = state.board.state[row][col];
+		// 		}
+		// 	}
+		// }
 		letterStates.set(letters);
 	});
 

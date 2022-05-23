@@ -46,7 +46,7 @@
 			toaster.pop(modeData.modes[$mode].name);
 		}}
 	>
-		wordle+
+		Quantum Wordle
 	</h1>
 	<div class="icons">
 		{#if showStats}
@@ -97,6 +97,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		font-size: var(--fs-large);
+		text-transform: none;
 		cursor: pointer;
 		text-align: center;
 	}

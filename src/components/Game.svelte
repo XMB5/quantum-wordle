@@ -23,8 +23,9 @@
 		DELAY_INCREMENT,
 		PRAISE,
 		getState,
+		mergeStates,
+		updateLetterState,
 		modeData,
-		checkHardMode,
 		ROWS,
 		COLS,
 		newSeed,
@@ -59,42 +60,31 @@
 	$: if (showSettings && tips) tip = Math.floor(tips.length * Math.random());
 
 	function submitWord() {
-		if (game.board.words[game.guesses].length !== COLS) {
+		const guess1 = game.board.words1[game.guesses];
+		const guess2 = game.board.words2[game.guesses];
+		if (guess1.length !== COLS || guess2.length !== COLS) {
 			toaster.pop("Not enough letters");
 			board.shake(game.guesses);
-		} else if (words.contains(game.board.words[game.guesses])) {
-			if (game.guesses > 0) {
-				const hm = checkHardMode(game.board, game.guesses);
-				if ($settings.hard[$mode]) {
-					if (hm.type === "🟩") {
-						toaster.pop(
-							`${contractNum(hm.pos + 1)} letter must be ${hm.char.toUpperCase()}`
-						);
-						board.shake(game.guesses);
-						return;
-					} else if (hm.type === "🟨") {
-						toaster.pop(`Guess must contain ${hm.char.toUpperCase()}`);
-						board.shake(game.guesses);
-						return;
-					}
-				} else if (hm.type !== "⬛") {
-					game.validHard = false;
-				}
-			}
-			const state = getState(word, game.board.words[game.guesses]);
-			game.board.state[game.guesses] = state;
-			state.forEach((e, i) => {
-				const ls = $letterStates[game.board.words[game.guesses][i]];
-				if (ls === "🔳" || e === "🟩") {
-					$letterStates[game.board.words[game.guesses][i]] = e;
-				}
+		} else if (!words.contains(guess1)) {
+			toaster.pop("Not a word: " + guess1);
+			board.shake(game.guesses);
+		} else if (!words.contains(guess2)) {
+			toaster.pop("Not a word: " + guess2);
+			board.shake(game.guesses);
+		} else {
+			const state1 = getState(word, guess1);
+			const state2 = getState(word, guess2);
+			const mergedState = mergeStates(state1, state2);
+			game.board.state[game.guesses] = mergedState;
+			mergedState.forEach((letterState, i) => {
+				const guess1Letter = guess1[i];
+				const guess2Letter = guess2[i];
+				$letterStates[guess1Letter] = updateLetterState($letterStates[guess1Letter], letterState);
+				$letterStates[guess2Letter] = updateLetterState($letterStates[guess2Letter], letterState);
 			});
 			++game.guesses;
-			if (game.board.words[game.guesses - 1] === word) win();
+			if (mergedState.every(letterState => letterState === '🟩')) win();
 			else if (game.guesses === ROWS) lose();
-		} else {
-			toaster.pop("Not in word list");
-			board.shake(game.guesses);
 		}
 	}
 
@@ -175,7 +165,8 @@
 	/>
 	<Board
 		bind:this={board}
-		bind:value={game.board.words}
+		bind:value1={game.board.words1}
+		bind:value2={game.board.words2}
 		tutorial={$settings.tutorial === 1}
 		on:closeTutPopUp|once={() => ($settings.tutorial = 0)}
 		board={game.board}
@@ -187,7 +178,8 @@
 			if ($settings.tutorial) $settings.tutorial = 0;
 			board.hideCtx();
 		}}
-		bind:value={game.board.words[game.guesses === ROWS ? 0 : game.guesses]}
+		bind:value1={game.board.words1[game.guesses === ROWS ? 0 : game.guesses]}
+		bind:value2={game.board.words2[game.guesses === ROWS ? 0 : game.guesses]}
 		on:submitWord={submitWord}
 		on:esc={() => {
 			showTutorial = false;

@@ -5,7 +5,10 @@
 
 	import { DELAY_INCREMENT, ROWS } from "../../utils";
 
-	export let value = "";
+	import KetDisplay from "./KetDisplay.svelte";
+
+	export let value1 = "";
+	export let value2 = "";
 	export let state: LetterState;
 	export let position = 0;
 	export function bounce() {
@@ -16,7 +19,8 @@
 	let animation = "";
 
 	// reset animation when value changes, because for some reason changing anination to "" when the game is over causes the tiles to flash
-	$: !value && (animation = "");
+	//TODO: low priority: get animation working
+	//$: !value && (animation = "");
 
 	// ensure all animations play
 	const unsub = mode.subscribe(() => {
@@ -32,13 +36,14 @@
 
 <div
 	data-animation={animation}
-	class:value
+	class:value1
+	class:value2
 	class:pop
 	class="tile {state} {s}"
 	style="transition-delay: {position * DELAY_INCREMENT}ms"
 >
-	<div class="front">{value}</div>
-	<div class="back">{value}</div>
+	<div class="front"><KetDisplay value={value1}/><span class="hr-sect">+</span><KetDisplay value={value2}/></div>
+	<div class="back"><KetDisplay value={value1}/><span class="hr-sect">+</span><KetDisplay value={value2}/></div>
 </div>
 
 <style lang="scss">
@@ -61,6 +66,24 @@
 		transform-style: preserve-3d;
 		&[data-animation="bounce"] {
 			animation: bounce 1s;
+		}
+	}
+	/* https://stackoverflow.com/a/36159798 */
+	.hr-sect {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		color: white;
+		font-size: 1.3rem;
+
+		&:before, &:after {
+			content: "";
+			flex-grow: 1;
+			background: white;
+			height: 1px;
+			font-size: 0;
+			line-height: 0;
+			margin: 0 8px;
 		}
 	}
 	.back,

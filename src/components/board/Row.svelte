@@ -5,7 +5,8 @@
 	import Tile from "./Tile.svelte";
 	export let guesses: number;
 	export let num: number;
-	export let value = "";
+	export let value1 = "";
+	export let value2 = "";
 	export let state: LetterState[];
 	export function shake() {
 		animation = "shake";
@@ -27,7 +28,7 @@
 	class:complete={guesses > num}
 >
 	{#each Array(COLS) as _, i}
-		<Tile bind:this={tiles[i]} state={state[i]} value={value.charAt(i)} position={i} />
+		<Tile bind:this={tiles[i]} state={state[i]} value1={value1.charAt(i)} value2={value2.charAt(i)} position={i} />
 	{/each}
 </div>
 
